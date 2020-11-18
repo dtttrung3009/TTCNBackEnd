@@ -55,4 +55,16 @@ module.exports = {
     const newAdmin = await admin.save();
     res.send(newAdmin);
   },
+  changeInforUser: async (req, res, next) => {
+    const userId= req.params.id;
+    const user = await User.findById(userId);
+    if(user){
+      user.name=req.body.name|| user.name;
+      user.email= req.body.email||user.email;
+      user.password=req.body.password.||user.password;
+      res.send({
+        
+      })
+    }
+  }
 };
