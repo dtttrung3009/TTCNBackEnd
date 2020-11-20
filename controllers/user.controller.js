@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const { getToken, isAdmin } = require("../middlewares/auth.middleware");
+const { getToken } = require("../middlewares/auth.middleware");
 
 module.exports = {
   register: async (req, res, next) => {
@@ -47,8 +47,8 @@ module.exports = {
   createAdmin: async (req, res, next) => {
     const admin = new User({
       fullName: "admin",
-      email: "admin@gmail.com",
-      password: "1234@1234",
+      email: "admin@example.com",
+      password: "1234",
       phoneNumber: "0000",
       isAdmin: true,
     });
@@ -56,15 +56,13 @@ module.exports = {
     res.send(newAdmin);
   },
   changeInforUser: async (req, res, next) => {
-    const userId= req.params.id;
+    const userId = req.params.id;
     const user = await User.findById(userId);
-    if(user){
-      user.name=req.body.name|| user.name;
-      user.email= req.body.email||user.email;
-      user.password=req.body.password.||user.password;
-      res.send({
-        
-      })
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      user.password = req.body.password || user.password;
+      res.send({});
     }
-  }
+  },
 };

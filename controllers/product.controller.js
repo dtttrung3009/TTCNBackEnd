@@ -2,26 +2,24 @@ const Product = require('../models/product.model');
 
 module.exports = {
     getAllProduct: async (req, res, next) => {
-        const category = req.query.category ? {
-            category: req.query.category
-        } : {};
-        const searchKeyword = req.query.searchKeyword ? {
-                name: {
-                    $regex: req.query.searchKeyword,
-                    $option: 'i'
-                },
-            } : {},
-            const sortOrder = req.query.sortOrder ? req.query.sortOrder === 'lowest' ? {
-                price: 1
-            } : {
-                price: -1
-            } : {
-                id: -1
-            };
-        const products = await Product.find({
-            ...category,
-            ...searchKeyword
-        }).sort(sortOrder);
+        const category = req.query.category ? { category: req.query.category } : {};
+        const searchKeyword = req.query.searchKeyword
+          ? {
+              name: {
+                $regex: req.query.searchKeyword,
+              $options: "i", ///option i la khong phan biet chu thuong va chu hoa
+              },
+            }
+          : {};
+        ///1: asc, -1:desc
+        const sortOrder = req.query.sortOrder
+          ? req.query.sortOrder === "lowest"
+            ? { price: 1 }
+            : { price: -1 }
+          : { _id: -1 };
+        const products = await Product.find({ ...category, ...searchKeyword }).sort(
+          sortOrder
+        );
         res.send(products);
     },
     getProductById: async (req, res, next) => {
