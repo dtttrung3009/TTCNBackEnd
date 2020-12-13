@@ -23,7 +23,6 @@ router.post("/", upload.single("image"), (req, res) => {
 });
 router.get("/:name", (req, res) => {
   const fileName = req.params.name;
-  // console.log("fileName", fileName);
   if (!fileName) {
     return res.send({
       status: false,

@@ -48,7 +48,7 @@ module.exports = {
       product.rating =
         product.reviews.reduce((a, c) => c.rating + a, 0) /
         product.reviews.length;
-      const updateProduct = await Product.save();
+      const updateProduct = await product.save();
       res.status(201).send({
         data: updateProduct.reviews[updateProduct.reviews.length - 1],
         message: "Review saved success",
