@@ -20,7 +20,8 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   rating: { type: Number, required: true, default: 0 },
   numReviews: { type: Number, required: true, default: 0 },
-  reviews: [reviewSchema],
+  reviews: [reviewSchema]
 });
+
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

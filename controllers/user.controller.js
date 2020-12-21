@@ -1,68 +1,89 @@
-const User = require("../models/user.model");
-const { getToken } = require("../middlewares/auth.middleware");
+const { getToken } = require('../middlewares/auth.middleware');
+const User = require('../models/user.model');
 
-module.exports = {
-  register: async (req, res, next) => {
-    const { fullName, email, phoneNumber, password, isAdmin } = req.body;
+exports.update = async (req, res) => {
+    const id = req.params.id;
+    const user = User.findOneById(id);
+
+    if (user){
+        user.fullName = req.body.fullName || user.fullName;
+        user.email = req.body.email || user.email;
+        user.password = req.body.password || user.password;
+        user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+
+        const updatedUser = await user.save();
+
+        return res.send({
+            _id: updatedUser._id,
+            fullName: updatedUser.fullName,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+            token: getToken(updatedUser),
+        });
+    }
+    return res.status(404).send({ msg: "User not found!" });
+}
+
+exports.signin = async (req, res) => {
+
+    const signinUser = await User.findOne({
+        email: req.body.email,
+        password: req.body.password
+    });
+
+    if (signinUser){
+        res.send({
+            fullName: signinUser.fullName,
+            email: signinUser.email,
+            phoneNumber: signinUser.phoneNumber,
+            password: signinUser.password,
+            isAdmin: signinUser.isAdmin,
+            token: getToken(signinUser),
+        })
+    } else{
+        res.status(401).send({msg: 'Invalid email or password!'});
+    }
+}
+
+exports.register = async (req, res) => {
+
     const user = new User({
-      fullName,
-      email,
-      phoneNumber,
-      password,
-      isAdmin,
+        fullName: req.body.fullName,
+        email: req.body.email,
+        phoneNumber: req.body.phoneNumber,
+        password: req.body.password,
+        isAdmin: req.body.isAdmin
     });
+
     const newUser = await user.save();
-    if (newUser) {
-      return res.status(201).send({
-        _id: newUser.id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        phoneNumber: newUser.phoneNumber,
-        isAdmin: newUser.isAdmin,
-        token: getToken(newUser),
-      });
-    } else {
-      return res.status(401).send({ message: "Invalid user data" });
+
+    if (newUser){
+        res.send({
+            fullName: newUser.fullName,
+            email: newUser.email,
+            phoneNumber: newUser.phoneNumber,
+            password: newUser.password,
+            isAdmin: newUser.isAdmin,
+            token: getToken(newUser),
+        })
+    } else{
+        res.status(401).send({msg: 'Invalid user data!'});
     }
-  },
-  signin: async (req, res, next) => {
-    const { email, password } = req.body;
-    const signInUser = await User.findOne({
-      email,
-      password,
-    });
-    if (signInUser) {
-      return res.status(201).send({
-        _id: signInUser.id,
-        fullName: signInUser.fullName,
-        email: signInUser.email,
-        phoneNumber: signInUser.phoneNumber,
-        isAdmin: signInUser.isAdmin,
-        token: getToken(signInUser),
-      });
-    } else {
-      return res.status(401).send({ message: "Invalid email or password" });
+}
+
+exports.createAdmin = async (req, res) => {
+    try {
+        const user = new User({
+            fullName: "admin",
+            email: "admin@example.com",
+            password: "1234",
+            phoneNumber: "0000",
+            isAdmin: true,
+        });
+
+        const newUser = await user.save();
+        res.send(newUser);
+    } catch (err) {
+        res.send({msg: err.message});
     }
-  },
-  createAdmin: async (req, res, next) => {
-    const admin = new User({
-      fullName: "admin",
-      email: "admin@example.com",
-      password: "1234",
-      phoneNumber: "0000",
-      isAdmin: true,
-    });
-    const newAdmin = await admin.save();
-    res.send(newAdmin);
-  },
-  changeInforUser: async (req, res, next) => {
-    const userId = req.params.id;
-    const user = await User.findById(userId);
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      user.password = req.body.password || user.password;
-      res.send({});
-    }
-  },
-};
+}

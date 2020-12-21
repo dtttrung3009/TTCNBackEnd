@@ -1,64 +1,76 @@
-const Order = require("../models/order.model");
-const { getToken, isAdmin } = require("../middlewares/auth.middleware");
-module.exports = {
-  getAll: async (req, res, next) => {
-    const orders = await Order.find({}).populate("user");
-    res.send(orders);
-  },
-  getOrderUserHave: async (req, res, next) => {
-    const orders = await Order.find({ user: req.user_id });
-    res.send(orders);
-  },
-  getOrderById: async (req, res, next) => {
-    const order = await Order.findOne({ _id: req.paems.id });
+const Order = require('../models/order.model');
+
+exports.pay = async (req, res) => {
+    const id = req.params.id;
+    const order = await Order.findById(id);
+
     if (order) {
-      res.send(order);
-    } else {
-      res.status(404).send("Order Not Found");
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.payment = {
+            paymentMethod: "paypal",
+            paymentResult: {
+                payerID: req.body.payerID,
+                orderID: req.body.orderID,
+                paymentID: req.body.paymentID
+            }
+        };
+        const updatedOrder = await order.save();
+        return res.status(200).send({ msg: "Order paid!", data: updatedOrder });
     }
-  },
-  deleteOrderById: async (req, res, next) => {
-    const order = await Order.findOne({ _id: req.params.id });
-    if (order) {
-      const deleteOrder = await order.remove();
-      res.send(deleteOrder);
-    } else {
-      res.status(404).send("Order not found");
-    }
-  },
-  createOrder: async (req, res, next) => {
-    const newOrder = new Order({
-      orderItems: req.body.orderItems,
-      user: req.user._id,
-      shipping: req.body.shipping,
-      payment: req.body.payment,
-      itemsPrice: req.body.itemsPrice,
-      taxPrice: req.body.taxPrice,
-      shippingPrice: req.body.shippingPrice,
-      totalPrice: req.body.totalPrice,
+    return res.status(404).send({ msg: "Error in creating payment!" });
+}
+
+exports.createOrder = async (req,res) => {
+    const order = new Order({
+        user: req.user._id,
+        orderItems: req.body.orderItems,
+        shipping: req.body.shipping,
+        payment: req.body.payment,
+        itemsPrice: req.body.itemsPrice,
+        taxPrice: req.body.taxPrice,
+        shippingPrice: req.body.shippingPrice,
+        totalPrice: req.body.totalPrice
     });
-    const newOrderCreated = await newOrder.save();
-    res
-      .status(201)
-      .send({ message: "New order created", data: newOrderCreated });
-  },
-  payOrder: async (req, res, next) => {
-    const order = await Order.findById(req.params.id);
-    if (order) {
-      order.isPaid = true;
-      order.paidAt = Date.now();
-      order.payment = {
-        paymentMethod: "paypal",
-        paymentResult: {
-          payerID: req.body.payerID,
-          orderID: req.body.orderID,
-          paymentID: req.body.paymentID,
-        },
-      };
-      const updatedOrder = await order.save();
-      res.send({ message: "Order Paid.", order: updatedOrder });
-    } else {
-      res.status(404).send({ message: "Order not found." });
+
+    const newOrder = await order.save();
+    
+    if (newOrder) {
+        return res.status(200).send({ msg: "Order successfully saved!", data: newOrder });
     }
-  },
-};
+
+    return res.status(500).send({ msg: "Error in creating order!" });
+}
+
+exports.deleteOrder = async (req, res) => {
+    const id = req.params.id;
+    const order = await Order.findById(id);
+
+    if (order) {
+        await order.remove();
+        return res.status(200).send({ msg: "Delete order successfully!" });
+    }
+
+    return res.status(404).send({msg: 'Order not found!'});
+}
+
+exports.getOrderById = async (req, res) => {
+
+    const id = req.params.id;
+    const order = await Order.findById(id);
+
+    if (order){
+        return res.send(order);
+    }
+    return res.status(404).send({msg: 'Order not found!'});
+}
+
+exports.getMyOrders = async (req, res) => {
+    const orders = await Order.findOne({ user: req.user._id });
+    return res.send(orders);
+}
+
+exports.getOrders = async (req, res) => {
+    const orders = await Order.find({}).populate('user');
+    return res.send(orders);
+}

@@ -1,14 +1,19 @@
-const epxress= require('express');
-const { getToken, isAdmin,isAuth} = require("../middlewares/auth.middleware");
-const orderController= require('../controllers/order.controller');
-const router= epxress.Router();
+const { isAdmin, isAuth } = require('../middlewares/auth.middleware');
+const orderController = require('../controllers/order.controller');
 
-router.get('/',isAuth, orderController.getAll);
-router.get('/mine', isAuth, orderController.getOrderUserHave);
-router.get('/:id',isAuth,orderController.getOrderById);
-router.delete('/:id',isAuth,isAdmin, orderController.deleteOrderById);
+const express = require('express');
+const router = express.Router();
 
-router.post('/',isAuth,orderController.createOrder);
-router.put('/:id.pay',isAuth, orderController.payOrder);
+router.put("/:id.pay", isAuth, orderController.pay);
 
-module.exports=router;
+router.post("/", isAuth, orderController.createOrder);
+
+router.delete('/:id', isAuth, isAdmin, orderController.deleteOrder);
+
+router.get('/:id', isAuth, orderController.getOrderById);
+
+router.get('/mine', isAuth, orderController.getMyOrders);
+
+router.get('/',isAuth, orderController.getOrders);
+
+module.exports = router;

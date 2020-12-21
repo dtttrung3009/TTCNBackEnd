@@ -1,32 +1,36 @@
 const mongoose = require("mongoose");
 
-const shippingObject = {
+const shippingOject = {
   address: { type: String, required: true },
   city: { type: String, required: true },
-  country: { type: String, required: true },
+  country: { type: String, required: true }  
 };
 
 const paymentObject = {
-  paymentMethod: { type: String, required: true },
+  paymentMethod: { type: String, required: true }
 };
 
-const orderItemSchema = new mongoose.Schema({
+const orderItemSchema = new  mongoose.Schema({
   name: { type: String, required: true },
-  quantity: { type: Number, required: true },
+  quantity: { type: Number, required: true},
   image: { type: String, required: true },
   price: { type: String, required: true },
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
-    required: true,
-  },
+    required: true
+  }
 });
 
-const orderSchema = new mongoose.Schema(
+const orderSchema = mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
     orderItems: [orderItemSchema],
-    shipping: shippingObject,
+    shipping: shippingOject,
     payment: paymentObject,
     itemsPrice: { type: Number },
     taxPrice: { type: Number },
@@ -35,13 +39,12 @@ const orderSchema = new mongoose.Schema(
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
-    deliveredAt: { type: Date },
+    deliveredAt: { type: Date }
   },
   {
-    timestamps: true,
+    timestamp: true
   }
-);
+  );
 
 const Order = mongoose.model("Order", orderSchema);
-
 module.exports = Order;
