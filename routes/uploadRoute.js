@@ -20,11 +20,10 @@ router.post("/", upload.single("image"), (req, res) => {
   let urlFile=`/${req.file.path}`;
   urlFile=urlFile.slice(9);///Cắt bỏ url /uploads/
   res.send(urlFile);
-  
 });
 router.get("/:name", (req, res) => {
   const fileName = req.params.name;
-  console.log("fileName", fileName);
+  // console.log("fileName", fileName);
   if (!fileName) {
     return res.send({
       status: false,
