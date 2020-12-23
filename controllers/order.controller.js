@@ -6,7 +6,6 @@ module.exports = {
     res.send(orders);
   },
   getOrderUserHave: async (req, res, next) => {
-    console.log(req);
     const orders = await Order.find({ user: req.user._id });
     res.send(orders);
   },
