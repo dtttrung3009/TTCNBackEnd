@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const shippingOject = {
   address: { type: String, required: true },
+  district: { type: String, required: true },
   city: { type: String, required: true },
-  country: { type: String, required: true }  
+  phone: { type: String, required: true }  
 };
 
 const paymentObject = {
@@ -33,9 +34,6 @@ const orderSchema = mongoose.Schema(
     shipping: shippingOject,
     payment: paymentObject,
     itemsPrice: { type: Number },
-    taxPrice: { type: Number },
-    shippingPrice: { type: Number },
-    totalPrice: { type: Number },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
