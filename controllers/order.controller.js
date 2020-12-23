@@ -6,11 +6,12 @@ module.exports = {
     res.send(orders);
   },
   getOrderUserHave: async (req, res, next) => {
-    const orders = await Order.find({ user: req.user_id });
+    console.log(req);
+    const orders = await Order.find({ user: req.user._id });
     res.send(orders);
   },
   getOrderById: async (req, res, next) => {
-    const order = await Order.findOne({ _id: req.paems.id });
+    const order = await Order.findOne({ _id: req.params.id });
     if (order) {
       res.send(order);
     } else {
@@ -33,8 +34,6 @@ module.exports = {
       shipping: req.body.shipping,
       payment: req.body.payment,
       itemsPrice: req.body.itemsPrice,
-      taxPrice: req.body.taxPrice,
-      shippingPrice: req.body.shippingPrice,
       totalPrice: req.body.totalPrice,
     });
     const newOrderCreated = await newOrder.save();

@@ -17,7 +17,7 @@ const isAuth = (req, res, next) => {
 
   if (token) {
     const onlyToken = token.slice(7, token.length);
-    jwt.verify(onlyToken, config.JWT_SECRET, (err, decode) => {
+    jwt.verify(onlyToken, process.env.JWT_SECRET, (err, decode) => {
       if (err) {
         return res.status(401).send({ message: "Invalid Token" });
       }
@@ -37,4 +37,4 @@ const isAdmin = (req, res, next) => {
   return res.status(401).send({ message: "Admin token is not valid" });
 };
 
-module.exports= { getToken, isAuth, isAdmin };
+module.exports = { getToken, isAuth, isAdmin };

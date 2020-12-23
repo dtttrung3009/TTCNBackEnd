@@ -1,22 +1,23 @@
 const mongoose = require("mongoose");
 
 const shippingObject = {
-  address: { type: String, required: true },
+  street: { type: String, required: true },
+  district: { type: String, required: true },
   city: { type: String, required: true },
-  country: { type: String, required: true },
+  phone: { type: String, required: true },
 };
 
 const paymentObject = {
-  paymentMethod: { type: String, required: true },
+  payment: { type: String, required: true },
 };
 
 const orderItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  quantity: { type: Number, required: true },
+  qty: { type: Number, required: true },
   image: { type: String, required: true },
   price: { type: String, required: true },
   product: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId, 
     ref: "Product",
     required: true,
   },
@@ -29,9 +30,9 @@ const orderSchema = new mongoose.Schema(
     shipping: shippingObject,
     payment: paymentObject,
     itemsPrice: { type: Number },
-    taxPrice: { type: Number },
-    shippingPrice: { type: Number },
-    totalPrice: { type: Number },
+    // taxPrice: { type: Number },
+    // shippingPrice: { type: Number },
+    // totalPrice: { type: Number },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },

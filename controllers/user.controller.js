@@ -3,13 +3,13 @@ const { getToken } = require("../middlewares/auth.middleware");
 
 module.exports = {
   register: async (req, res, next) => {
-    const { fullName, email, phoneNumber, password, isAdmin } = req.body;
+    const { name, email, phoneNumber, password, isAdmin } = req.body;
     const user = new User({
-      fullName,
+      fullName: name,
       email,
       phoneNumber,
       password,
-      isAdmin,
+      isAdmin: false,
     });
     const newUser = await user.save();
     if (newUser) {
@@ -57,12 +57,22 @@ module.exports = {
   },
   changeInforUser: async (req, res, next) => {
     const userId = req.params.id;
+    console.log(req.body);
     const user = await User.findById(userId);
     if (user) {
-      user.name = req.body.name || user.name;
+      user.fullName = req.body.name || user.fullName;
       user.email = req.body.email || user.email;
       user.password = req.body.password || user.password;
-      res.send({});
+      const updatedUser = await user.save();
+      res.send({
+        _id: updatedUser.id,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        isAdmin: updatedUser.isAdmin,
+        token: getToken(updatedUser),
+      });
+    } else {
+      res.status(404).send({ message: "User Not Found" });
     }
   },
 };
