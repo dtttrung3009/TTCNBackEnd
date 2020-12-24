@@ -109,7 +109,7 @@ exports.getAllProducts = async (req, res) => {
     const searchKeyword = req.query.searchKeyword 
                             ? {
                                 name: {
-                                    $regex: searchKeyword,
+                                    $regex: req.query.searchKeyword,
                                     $options: 'i',
                                 }
                             }
