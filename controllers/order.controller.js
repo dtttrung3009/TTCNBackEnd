@@ -66,7 +66,7 @@ exports.getOrderById = async (req, res) => {
 }
 
 exports.getMyOrders = async (req, res) => {
-    const orders = await Order.findOne({ user: req.user._id });
+    const orders = await Order.find({ user: req.user._id });
     return res.send(orders);
 }
 

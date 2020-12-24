@@ -1,4 +1,3 @@
-const { getPagination } = require('../middlewares/pagination.middleware');
 const Product = require('../models/product.model');
 
 exports.deleteProduct = async (req, res) => {
@@ -122,22 +121,7 @@ exports.getAllProducts = async (req, res) => {
                                 : { price: -1 }
                             : { _id: -1 };
 
-    const page = req.query.page ? {page: req.query.page} : 0;
-    let { limit, offset } = getPagination(page, 12);
-
-    Product.find({ ...category, ...searchKeyword })
-            .sort( sortOrder )
-            .skip(offset)
-            .limit(limit)
-            .exec((err, doc) => {
-                if (err) {
-                    return res.send(err);
-                }
-                return res.send({msg: "get it!!!", data: {
-                    page: page,
-                    limitCount: limit,
-                    pageSize: doc.length,
-                    products: doc}
-                });
-            });
+    const products = await Product.find({...category, ...searchKeyword})
+                                .sort(sortOrder);
+    return res.status(200).send(products);
 }
